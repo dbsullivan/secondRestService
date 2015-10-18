@@ -12,8 +12,9 @@ public class getUsers {
 //    The service should return all users and roles if a specific userid is NOT passed to the service.
 //    The service should return all roles for the userid, if a specific userid IS passed to the service.
 
-    //    public void getUsersAndRoles() {
-    public ArrayList<String> getUsersAndRoles() {
+    //    public void getUsersAndRoles(String userId) {   // have 2 methods, if userId is null, else userId specific sql against
+
+    public ArrayList<String> getAllUsersAndRoles() {
 
         Connection connection = null;
         Statement statement = null;
@@ -24,20 +25,12 @@ public class getUsers {
             Class.forName("com.mysql.jdbc.Driver");
 
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost -u root/sample", "sample", "sample");
-//            "jdbc:mysql://localhost/sample", "", "");
-//            "jdbc:mysql://localhost -u root/sample", "", "");
-//            "jdbc:mysql://localhost -u tomcat/sample", "", "");
+              "jdbc:mysql://localhost/sample", "root", "");
 
             statement = connection.createStatement();
 
             String queryString = "SELECT user_name, role_name"
                     + " FROM user_roles order by user_name, role_name";
-//
-//            String name = "Admin";
-//            String queryString = "SELECT emp_id, first_name, last_name"
-//                    + " FROM users " + "WHERE last_name like '"
-//                    + name + "%'";
 
             System.out.println("queryString: " + queryString);
 
@@ -47,10 +40,9 @@ public class getUsers {
 
             while (resultSet.next()) {
                 String userName = resultSet.getString("user_name");
-                String userRole = resultSet.getString("user_role");
-                String Row = "User Name: " + userName + "User Role: " + userRole + "\n";
-                System.out.println(" Row: " + userName + " "
-                        + userRole);
+                String roleName = resultSet.getString("role_name");
+                String Row = "UserName: " + userName + "  UserRole: " + roleName + "\n";
+                System.out.println(" Row: " + userName + " " + roleName);
                 userAndRole.add(Row);
             }
 
@@ -89,4 +81,77 @@ public class getUsers {
 
         return userAndRole;  // return Arraylist
     }
+
+
+    public ArrayList<String> getOneUserRoles(String userId) {
+
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        ArrayList<String> userAndRole = new ArrayList<>();
+
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost/sample", "root", "");
+
+            statement = connection.createStatement();
+
+            String name = userId;
+            String queryString = "SELECT user_name, role_name"
+                    + " FROM user_roles WHERE user_name =  '" + name + "'"
+                    + " order by role_name";
+
+            System.out.println("queryString: " + queryString);
+
+            resultSet = statement.executeQuery(queryString);
+
+            System.out.println();
+
+            while (resultSet.next()) {
+                String userName = resultSet.getString("user_name");
+                String roleName = resultSet.getString("role_name");
+                String Row = "UserName: " + userName + "  UserRole: " + roleName + "\n";
+                System.out.println(" Row: " + userName + " " + roleName);
+                userAndRole.add(Row);
+            }
+
+        } catch (ClassNotFoundException classNotFound) {
+            System.err.println("Cannot find database driver ");
+            classNotFound.printStackTrace();
+        } catch (SQLException sqlException) {
+            System.err.println("Error in connection to database "
+                    + sqlException);
+            sqlException.printStackTrace();
+        } catch (Exception exception) {
+            System.err.println("General Error");
+            exception.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+
+                if (statement != null) {
+                    statement.close();
+                }
+
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException sqlException) {
+                System.err.println("Error in connection to database "
+                        + sqlException);
+                sqlException.printStackTrace();
+            } catch (Exception exception) {
+                System.err.println("General Error");
+                exception.printStackTrace();
+            }
+        }
+
+        return userAndRole;  // return Arraylist
+    }
+
 }

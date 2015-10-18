@@ -4,6 +4,7 @@ import com.sun.jersey.api.container.httpserver.HttpServerFactory;
 import java.io.IOException;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Path;
 
@@ -20,16 +21,26 @@ public class HelloWorld {
     @GET
     // The Java method will produce content identified by the MIME Media type "text/plain"
     @Produces("text/plain")
-    public String getClichedMessage() {
-        // Return some cliched textual content
-//        return "Hello World";
+    public String getAllUserRoles() {
         getUsers newUsers = new getUsers();
         ArrayList<String> showUsers = new ArrayList<>();
-        showUsers = newUsers.getUsersAndRoles();
+        showUsers = newUsers.getAllUsersAndRoles();
         return showUsers.toString();
     }
 
-    // second path will have "/helloworld/{userid}"  and pathParm to pass it to getUserRoles NOT .getUsersAndRoles();
+    // second path will have "/helloworld/{userId}"  and pathParm to pass it to getUserRoles NOT .getUsersAndRoles();
+    // The Java method will process HTTP GET requests
+    @GET
+    // The Java method will produce content identified by the MIME Media type "text/plain"
+    @Produces("text/plain")
+    @Path("userID/{username}")
+    public String getOneUserRoles(@PathParam("username") String userId) {
+        getUsers newUsers = new getUsers();
+        ArrayList<String> showUsers = new ArrayList<>();
+        showUsers = newUsers.getOneUserRoles(userId);
+        return showUsers.toString();
+    }
+
 
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServerFactory.create("http://localhost:9998/");
